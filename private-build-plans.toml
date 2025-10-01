@@ -1,0 +1,23 @@
+[buildPlans.iosevka-sc]
+family = "Iosevka SC"
+spacing = "term"
+serifs = "sans"
+noCvSs = true
+exportGlyphNames = false
+noLigation = true
+
+[buildPlans.iosevka-sc.weights.Light]
+shape = 300
+menu  = 300
+css   = 300
+
+[buildPlans.iosevka-sc.weights.Regular]
+shape = 400
+menu  = 400
+css   = 400
+
+[buildPlans.iosevka-sc.weights.Bold]
+shape = 700
+menu  = 700
+css   = 700
+

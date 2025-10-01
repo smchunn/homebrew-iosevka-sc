@@ -1,0 +1,8 @@
+iosevka-build/
+nerd-fonts/
+patched-fonts/
+release/
+*.ttf
+*.otf
+*.woff
+*.woff2
