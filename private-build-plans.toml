@@ -6,6 +6,9 @@ noCvSs = true
 exportGlyphNames = false
 noLigation = true
 
+[buildPlans.iosevka-sc.buildOptions]
+noHinting = true
+
 [buildPlans.iosevka-sc.weights.Light]
 shape = 300
 menu  = 300
