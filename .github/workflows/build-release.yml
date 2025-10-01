@@ -76,7 +76,7 @@ jobs:
       - name: Build Iosevka SC
         run: |
           cd iosevka-build
-          npm run build -- ttf::iosevka-sc
+          npm run build -- ttf-unhinted::iosevka-sc
 
       - name: Setup Python for Nerd Fonts patcher
         uses: actions/setup-python@v5
