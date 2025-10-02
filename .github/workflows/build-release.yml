@@ -146,8 +146,8 @@ jobs:
 
             ### macOS (Homebrew)
             ```bash
-            brew tap smchunn/iosevka-sc
-            brew install iosevka-sc-nerd-font
+            brew tap smchunn/homebrew-iosevka-sc
+            brew install --cask font-iosevka-sc-nerd-font
             ```
 
             ### Arch Linux (AUR)
@@ -169,43 +169,39 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Trigger Homebrew formula update
+      - name: Update Homebrew cask
         run: |
           VERSION=${{ needs.check-new-release.outputs.latest_version }}
           REPO="${{ github.repository }}"
 
-          # Update Homebrew formula with new version and checksums
+          # Update Homebrew cask with new version and checksums
           SHA256=$(sha256sum release/*.tar.gz | cut -d' ' -f1)
 
-          cat > Formula/iosevka-sc-nerd-font.rb << 'EOF'
-          class IosevkaScNerdFont < Formula
+          cat > Casks/font-iosevka-sc-nerd-font.rb << 'EOF'
+          cask "font-iosevka-sc-nerd-font" do
+            version "VERSION_PLACEHOLDER"
+            sha256 "SHA256_PLACEHOLDER"
+
+            url "https://github.com/REPO_PLACEHOLDER/releases/download/vVERSION_PLACEHOLDER/iosevka-sc-nerd-font-vVERSION_PLACEHOLDER.tar.gz"
+            name "Iosevka SC Nerd Font"
             desc "Iosevka SC custom build patched with Nerd Fonts"
             homepage "https://github.com/REPO_PLACEHOLDER"
-            url "https://github.com/REPO_PLACEHOLDER/releases/download/VERSION_PLACEHOLDER/iosevka-sc-nerd-font-VERSION_PLACEHOLDER.tar.gz"
-            sha256 "SHA256_PLACEHOLDER"
-            version "VERSION_PLACEHOLDER"
 
-            def install
-              (share/"fonts").install Dir["*.ttf"]
-            end
-
-            test do
-              assert_path_exists share/"fonts"
-            end
+            font "*.ttf"
           end
           EOF
 
           # Replace placeholders
-          sed -i "s|REPO_PLACEHOLDER|$REPO|g" Formula/iosevka-sc-nerd-font.rb
-          sed -i "s|VERSION_PLACEHOLDER|$VERSION|g" Formula/iosevka-sc-nerd-font.rb
-          sed -i "s|SHA256_PLACEHOLDER|$SHA256|g" Formula/iosevka-sc-nerd-font.rb
+          sed -i "s|REPO_PLACEHOLDER|$REPO|g" Casks/font-iosevka-sc-nerd-font.rb
+          sed -i "s|VERSION_PLACEHOLDER|${VERSION#v}|g" Casks/font-iosevka-sc-nerd-font.rb
+          sed -i "s|SHA256_PLACEHOLDER|$SHA256|g" Casks/font-iosevka-sc-nerd-font.rb
 
-      - name: Commit and push Homebrew formula
+      - name: Commit and push Homebrew cask
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add Formula/iosevka-sc-nerd-font.rb
-          git commit -m "Update Homebrew formula for ${{ needs.check-new-release.outputs.latest_version }}" || echo "No changes to commit"
+          git add Casks/font-iosevka-sc-nerd-font.rb
+          git commit -m "Update Homebrew cask for ${{ needs.check-new-release.outputs.latest_version }}" || echo "No changes to commit"
           git push || echo "No changes to push"
 
       - name: Update AUR PKGBUILD

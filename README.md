@@ -9,8 +9,8 @@ This repository automatically builds new releases when upstream Iosevka releases
 ### macOS (Homebrew)
 
 ```bash
-brew tap smchunn/iosevka-sc
-brew install iosevka-sc-nerd-font
+brew tap smchunn/homebrew-iosevka-sc
+brew install --cask font-iosevka-sc-nerd-font
 ```
 
 ### Arch Linux (AUR)
@@ -41,7 +41,7 @@ The build plan is defined in `private-build-plans.toml`. To customize:
 2. Edit `private-build-plans.toml` with your desired variant options
 3. Update the repository URLs in:
    - `.github/workflows/build-release.yml`
-   - `Formula/iosevka-sc-nerd-font.rb`
+   - `Casks/font-iosevka-sc-nerd-font.rb`
    - `PKGBUILD`
 4. Commit and push to trigger the workflow
 
@@ -58,9 +58,9 @@ See the [Iosevka customization guide](https://github.com/be5invis/Iosevka/blob/m
    - Auto-updates Homebrew formula and AUR PKGBUILD
 
 2. **Homebrew Tap**:
-   - Formula stored in `Formula/iosevka-sc-nerd-font.rb`
+   - Cask stored in `Casks/font-iosevka-sc-nerd-font.rb`
    - Auto-updated by GitHub Actions on new releases
-   - Users can install with `brew tap` + `brew install`
+   - Users can install with `brew tap` + `brew install --cask`
 
 3. **AUR Package**:
    - PKGBUILD stored in this repository
