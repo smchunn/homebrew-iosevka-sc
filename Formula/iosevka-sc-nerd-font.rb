@@ -15,7 +15,7 @@ class IosevkaScNerdFont < Formula
       fonts_dir = Pathname.new(Dir.home)/"Library/Fonts"
       fonts_dir.mkpath
       Dir["#{share}/fonts/*.ttf"].each do |font|
-        cp font, fonts_dir, preserve: true
+        FileUtils.cp font, fonts_dir, preserve: true
       end
     else
       system "fc-cache", "-fv"
