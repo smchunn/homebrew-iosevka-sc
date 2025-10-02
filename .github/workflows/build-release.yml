@@ -96,8 +96,18 @@ jobs:
         run: |
           mkdir -p patched-fonts
           cd nerd-fonts
+
+          # Check if TTF files exist
+          if ! ls ../iosevka-build/dist/iosevka-sc/TTF/*.ttf 1> /dev/null 2>&1; then
+            echo "ERROR: No TTF files found in ../iosevka-build/dist/iosevka-sc/TTF/"
+            echo "Checking build output structure:"
+            ls -la ../iosevka-build/dist/ || echo "dist directory not found"
+            ls -la ../iosevka-build/dist/iosevka-sc/ || echo "iosevka-sc directory not found"
+            exit 1
+          fi
+
           for font in ../iosevka-build/dist/iosevka-sc/TTF/*.ttf; do
-            echo "Patching $(basename $font)"
+            echo "Patching $(basename "$font")"
             fontforge -script font-patcher "$font" \
               --complete \
               --careful \
