@@ -9,6 +9,29 @@ class IosevkaScNerdFont < Formula
     (share/"fonts").install Dir["*.ttf"]
   end
 
+  def post_install
+    if OS.mac?
+      # Copy fonts to user's Library/Fonts directory for immediate availability
+      fonts_dir = Pathname.new(Dir.home)/"Library/Fonts"
+      fonts_dir.mkpath
+      Dir["#{share}/fonts/*.ttf"].each do |font|
+        cp font, fonts_dir, preserve: true
+      end
+    else
+      system "fc-cache", "-fv"
+    end
+  end
+
+  def caveats
+    <<~EOS
+      Fonts have been installed to:
+      - #{share}/fonts/
+      - ~/Library/Fonts/ (macOS)
+
+      You may need to restart your applications to see the fonts.
+    EOS
+  end
+
   test do
     assert_path_exists share/"fonts"
   end
