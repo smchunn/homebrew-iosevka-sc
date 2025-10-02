@@ -10,7 +10,7 @@ depends=()
 provides=('ttf-font' 'iosevka-sc-nerd-font')
 conflicts=()
 source=("https://github.com/smchunn/iosevka-sc/releases/download/v${pkgver}/iosevka-sc-nerd-font-v${pkgver}.tar.gz")
-sha256sums=('f83b2c4f9d1a7c8641eacbc28dbc556f969c5a82634f9a0544d9c68493cde37e')
+sha256sums=('0bb41de806a7af6f72948558e6d65becceef6b94aa81d61f90f01919612673fc')
 
 package() {
     install -dm755 "${pkgdir}/usr/share/fonts/TTF"
