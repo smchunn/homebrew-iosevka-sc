@@ -26,7 +26,7 @@ paru -S iosevka-sc-nerd-font
 
 ### Manual Installation
 
-1. Download the latest release from the [Releases](https://github.com/smchunn/iosevka-sc/releases) page
+1. Download the latest release from the [Releases](https://github.com/smchunn/homebrew-iosevka-sc/releases) page
 2. Extract the archive
 3. Install the `.ttf` files:
    - **macOS**: Double-click each font file and click "Install Font", or copy to `~/Library/Fonts/`
