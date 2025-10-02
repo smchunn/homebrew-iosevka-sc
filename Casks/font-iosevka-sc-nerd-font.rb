@@ -1,13 +1,11 @@
 cask "font-iosevka-sc-nerd-font" do
-  version "0.0.0"
-  sha256 "0000000000000000000000000000000000000000000000000000000000000000"
+  version "33.3.1"
+  sha256 "0bb41de806a7af6f72948558e6d65becceef6b94aa81d61f90f01919612673fc"
 
-  url "https://github.com/smchunn/homebrew-iosevka-sc/releases/download/v#{version}/iosevka-sc-nerd-font-v#{version}.tar.gz"
+  url "https://github.com/smchunn/homebrew-iosevka-sc/releases/download/v33.3.1/iosevka-sc-nerd-font-v33.3.1.tar.gz"
   name "Iosevka SC Nerd Font"
   desc "Iosevka SC custom build patched with Nerd Fonts"
   homepage "https://github.com/smchunn/homebrew-iosevka-sc"
 
   font "*.ttf"
-
-  # No zap stanza required for fonts
 end
