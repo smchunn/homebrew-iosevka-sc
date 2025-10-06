@@ -115,8 +115,10 @@ jobs:
               --makegroups 5 \
               --complete \
               --careful \
+              --no-progressbars \
               --outputdir ../patched-fonts
           done
+          ls ../patched-fonts
 
       - name: Create release directory structure
         run: |
