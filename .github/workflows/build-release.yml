@@ -1,4 +1,4 @@
-name: Build and Release iosevka-scnf
+name: Build and Release iosevka-sc
 
 on:
   schedule:
@@ -76,7 +76,7 @@ jobs:
           cd iosevka-build
           npm install
 
-      - name: Build iosevka-scnf
+      - name: Build iosevka-sc
         run: |
           cd iosevka-build
           npm run build -- ttf-unhinted::iosevka-sc
@@ -112,6 +112,7 @@ jobs:
           for font in ../iosevka-build/dist/iosevka-sc/TTF-Unhinted/*.ttf; do
             echo "Patching $(basename "$font")"
             fontforge -script font-patcher "$font" \
+              --makegroups 5 \
               --complete \
               --careful \
               --outputdir ../patched-fonts
@@ -124,9 +125,9 @@ jobs:
           cd release
 
           # Create archives
-          tar -czf iosevka-sc-nerd-font-$VERSION.tar.gz -C ../patched-fonts .
+          tar -czf iosevka-sc-$VERSION.tar.gz -C ../patched-fonts .
           cd ../patched-fonts
-          zip -r ../release/iosevka-sc-nerd-font-$VERSION.zip .
+          zip -r ../release/iosevka-sc-$VERSION.zip .
 
           # Calculate checksums
           cd ../release
@@ -137,21 +138,21 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.check-new-release.outputs.latest_version }}
-          name: iosevka-scnf ${{ needs.check-new-release.outputs.latest_version }}
+          name: iosevka-sc ${{ needs.check-new-release.outputs.latest_version }}
           body: |
-            iosevka-scnf built from Iosevka ${{ needs.check-new-release.outputs.latest_version }}
+            iosevka-sc built from Iosevka ${{ needs.check-new-release.outputs.latest_version }}
 
             ## Installation
 
             ### macOS (Homebrew)
             ```bash
             brew tap smchunn/tap
-            brew install --cask font-iosevka-sc-nerd-font
+            brew install --cask font-iosevka-sc
             ```
 
             ### Arch Linux (AUR)
             ```bash
-            yay -S iosevka-sc-nerd-font
+            yay -S iosevka-sc
             ```
 
             ### Manual Installation
@@ -186,14 +187,14 @@ jobs:
           done
 
           # Update Cask
-          cat > tap-repo/Casks/font-iosevka-sc-nerd-font.rb << EOF
-          cask "font-iosevka-sc-nerd-font" do
+          cat > tap-repo/Casks/font-iosevka-sc.rb << EOF
+          cask "font-iosevka-sc" do
             version "${VERSION#v}"
             sha256 "$SHA256"
 
-            url "https://github.com/$REPO/releases/download/$VERSION/iosevka-sc-nerd-font-$VERSION.tar.gz"
-            name "iosevka-scnf"
-            desc "iosevka-scnf custom build patched with Nerd Fonts"
+            url "https://github.com/$REPO/releases/download/$VERSION/iosevka-sc-$VERSION.tar.gz"
+            name "iosevka-sc"
+            desc "iosevka-sc custom build patched with Nerd Fonts"
             homepage "https://github.com/$REPO"
 
           $(echo -e "$FONT_STANZAS")
@@ -205,7 +206,7 @@ jobs:
           cd tap-repo
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add Casks/font-iosevka-sc-nerd-font.rb
+          git add Casks/font-iosevka-sc.rb
           git commit -m "Update to ${{ needs.check-new-release.outputs.latest_version }}" || echo "No changes to commit"
           git push
 

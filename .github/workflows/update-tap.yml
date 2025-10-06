@@ -32,7 +32,7 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
           REPO="${{ github.repository }}"
-          TARBALL_URL="https://github.com/$REPO/releases/download/$VERSION/iosevka-sc-nerd-font-$VERSION.tar.gz"
+          TARBALL_URL="https://github.com/$REPO/releases/download/$VERSION/iosevka-sc-$VERSION.tar.gz"
 
           echo "tarball_url=$TARBALL_URL" >> $GITHUB_OUTPUT
           echo "Tarball URL: $TARBALL_URL"
@@ -73,14 +73,14 @@ jobs:
           done
 
           # Update Cask
-          cat > tap-repo/Casks/font-iosevka-sc-nerd-font.rb << EOF
-          cask "font-iosevka-sc-nerd-font" do
+          cat > tap-repo/Casks/font-iosevka-sc.rb << EOF
+          cask "font-iosevka-sc" do
             version "$VERSION_NUM"
             sha256 "$SHA256"
 
-            url "https://github.com/$REPO/releases/download/$VERSION/iosevka-sc-nerd-font-$VERSION.tar.gz"
-            name "iosevka-scnf"
-            desc "iosevka-scnf custom build patched with Nerd Fonts"
+            url "https://github.com/$REPO/releases/download/$VERSION/iosevka-sc-$VERSION.tar.gz"
+            name "iosevka-sc"
+            desc "iosevka-sc custom build patched with Nerd Fonts"
             homepage "https://github.com/$REPO"
 
           $(echo -e "$FONT_STANZAS")
@@ -92,7 +92,7 @@ jobs:
           cd tap-repo
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add Casks/font-iosevka-sc-nerd-font.rb
+          git add Casks/font-iosevka-sc.rb
           git commit -m "Update to ${{ steps.release.outputs.version }}" || echo "No changes to commit"
           git push
 
