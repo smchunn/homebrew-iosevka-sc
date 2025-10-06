@@ -50,6 +50,10 @@ jobs:
           echo "sha256=$SHA256" >> $GITHUB_OUTPUT
           echo "SHA256: $SHA256"
 
+          # Extract to list fonts
+          mkdir -p fonts
+          tar -xzf release.tar.gz -C fonts
+
       - name: Clone Homebrew tap repository
         run: |
           git clone https://${{ secrets.TAP_REPO_TOKEN }}@github.com/smchunn/homebrew-tap.git tap-repo
@@ -60,6 +64,13 @@ jobs:
           VERSION_NUM="${VERSION#v}"
           REPO="${{ github.repository }}"
           SHA256="${{ steps.checksum.outputs.sha256 }}"
+
+          # Generate font stanzas from extracted fonts
+          FONT_STANZAS=""
+          for font in fonts/*.ttf; do
+            FONT_NAME=$(basename "$font")
+            FONT_STANZAS="${FONT_STANZAS}  font \"${FONT_NAME}\"\n"
+          done
 
           # Update Cask
           cat > tap-repo/Casks/font-iosevka-sc-nerd-font.rb << EOF
@@ -72,8 +83,7 @@ jobs:
             desc "iosevka-scnf custom build patched with Nerd Fonts"
             homepage "https://github.com/$REPO"
 
-            font "*.ttf"
-          end
+          $(echo -e "$FONT_STANZAS")end
           EOF
 
       - name: Commit and push to Homebrew tap
