@@ -1,4 +1,4 @@
-# Iosevka SC Nerd Font
+# iosevka-scnf
 
 Custom build of [Iosevka](https://github.com/be5invis/Iosevka) patched with [Nerd Fonts](https://github.com/ryanoasis/nerd-fonts).
 
@@ -9,7 +9,7 @@ This repository automatically builds new releases when upstream Iosevka releases
 ### macOS (Homebrew)
 
 ```bash
-brew tap smchunn/homebrew-iosevka-sc
+brew tap smchunn/tap
 brew install --cask font-iosevka-sc-nerd-font
 ```
 
@@ -26,7 +26,7 @@ paru -S iosevka-sc-nerd-font
 
 ### Manual Installation
 
-1. Download the latest release from the [Releases](https://github.com/smchunn/homebrew-iosevka-sc/releases) page
+1. Download the latest release from the [Releases](https://github.com/smchunn/iosevka-sc/releases) page
 2. Extract the archive
 3. Install the `.ttf` files:
    - **macOS**: Double-click each font file and click "Install Font", or copy to `~/Library/Fonts/`
@@ -58,9 +58,9 @@ See the [Iosevka customization guide](https://github.com/be5invis/Iosevka/blob/m
    - Auto-updates Homebrew formula and AUR PKGBUILD
 
 2. **Homebrew Tap**:
-   - Cask stored in `Casks/font-iosevka-sc-nerd-font.rb`
+   - Formula and Cask stored in [smchunn/homebrew-tap](https://github.com/smchunn/homebrew-tap)
    - Auto-updated by GitHub Actions on new releases
-   - Users can install with `brew tap` + `brew install --cask`
+   - Users can install with `brew tap smchunn/tap` + `brew install --cask font-iosevka-sc-nerd-font`
 
 3. **AUR Package**:
    - PKGBUILD stored in this repository

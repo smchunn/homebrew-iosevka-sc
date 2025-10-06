@@ -1,5 +1,5 @@
 [buildPlans.iosevka-sc]
-family = "Iosevka SC"
+family = "iosevka-scnf"
 spacing = "term"
 serifs = "sans"
 noCvSs = true

@@ -2,9 +2,9 @@
 pkgname=iosevka-sc-nerd-font
 pkgver=33.3.1
 pkgrel=1
-pkgdesc="Iosevka SC custom build patched with Nerd Fonts"
+pkgdesc="iosevka-scnf custom build patched with Nerd Fonts"
 arch=('any')
-url="https://github.com/smchunn/homebrew-iosevka-sc"
+url="https://github.com/smchunn/iosevka-sc"
 license=('OFL')
 depends=()
 provides=('ttf-font' 'iosevka-sc-nerd-font')

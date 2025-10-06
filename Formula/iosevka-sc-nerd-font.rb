@@ -1,5 +1,5 @@
 class IosevkaScNerdFont < Formula
-  desc "Iosevka SC custom build patched with Nerd Fonts"
+  desc "iosevka-scnf custom build patched with Nerd Fonts"
   homepage "https://github.com/smchunn/iosevka-sc"
   url "https://github.com/smchunn/iosevka-sc/releases/download/v33.3.1/iosevka-sc-nerd-font-v33.3.1.tar.gz"
   sha256 "0bb41de806a7af6f72948558e6d65becceef6b94aa81d61f90f01919612673fc"
