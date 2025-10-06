@@ -41,7 +41,6 @@ The build plan is defined in `private-build-plans.toml`. To customize:
 2. Edit `private-build-plans.toml` with your desired variant options
 3. Update the repository URLs in:
    - `.github/workflows/build-release.yml`
-   - `Casks/font-iosevka-sc-nerd-font.rb`
    - `PKGBUILD`
 4. Commit and push to trigger the workflow
 
