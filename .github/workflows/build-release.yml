@@ -27,20 +27,32 @@ jobs:
       - name: Check for new Iosevka release
         id: check
         run: |
+          # Fetch latest tag once
+          LATEST=$(curl -s https://api.github.com/repos/be5invis/Iosevka/releases/latest | jq -r .tag_name)
+          echo "Latest Iosevka version: $LATEST"
+
+          if [ "${{ inputs.iosevka_version }}" = "latest" ]; then
+            echo "Manual trigger with 'latest'; building $LATEST"
+            echo "should_build=true" >> $GITHUB_OUTPUT
+            echo "latest_version=$LATEST" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
           if [ -n "${{ inputs.iosevka_version }}" ]; then
-            echo "Manual trigger with version ${{ inputs.iosevka_version }}"
+            echo "Manual trigger with explicit version ${{ inputs.iosevka_version }}"
             echo "should_build=true" >> $GITHUB_OUTPUT
             echo "latest_version=${{ inputs.iosevka_version }}" >> $GITHUB_OUTPUT
             exit 0
           fi
 
-          # Get latest Iosevka release
-          LATEST=$(curl -s https://api.github.com/repos/be5invis/Iosevka/releases/latest | jq -r .tag_name)
-          echo "Latest Iosevka version: $LATEST"
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
+            echo "Manual trigger with blank input; forcing build of latest ($LATEST)"
+            echo "should_build=true" >> $GITHUB_OUTPUT
+            echo "latest_version=$LATEST" >> $GITHUB_OUTPUT
+            exit 0
+          fi
 
-          # Check if we already have this version
-          EXISTING=$(git ls-remote --tags origin | grep -o "refs/tags/$LATEST" || echo "")
-
+          EXISTING=$(git ls-remote --tags origin | grep -o "refs/tags/$LATEST" || true)
           if [ -z "$EXISTING" ]; then
             echo "New version found: $LATEST"
             echo "should_build=true" >> $GITHUB_OUTPUT
@@ -49,7 +61,6 @@ jobs:
             echo "Version $LATEST already built"
             echo "should_build=false" >> $GITHUB_OUTPUT
           fi
-
   build:
     needs: check-new-release
     if: needs.check-new-release.outputs.should_build == 'true'
@@ -99,7 +110,6 @@ jobs:
         run: |
           mkdir -p patched-fonts
           cd nerd-fonts
-
           # Check if TTF files exist
           if ! ls ../iosevka-build/dist/iosevka-sc/TTF-Unhinted/*.ttf 1> /dev/null 2>&1; then
             echo "ERROR: No TTF files found in ../iosevka-build/dist/iosevka-sc/TTF-Unhinted/"
@@ -108,14 +118,25 @@ jobs:
             ls -la ../iosevka-build/dist/iosevka-sc/ || echo "iosevka-sc directory not found"
             exit 1
           fi
-
+          # Create post-process script to remove NerdFont from filename
+          cat > rename-font.sh << 'EOF'
+          #!/bin/bash
+          patched_font="$1"
+          new_name=$(echo "$patched_font" | sed 's/^[^-]*-//g')
+          if [ "$patched_font" != "$new_name" ]; then
+            mv "$patched_font" "$new_name"
+          fi
+          EOF
+          cat rename-font.sh
+          chmod +x rename-font.sh
           for font in ../iosevka-build/dist/iosevka-sc/TTF-Unhinted/*.ttf; do
             echo "Patching $(basename "$font")"
             fontforge -script font-patcher "$font" \
               --makegroups 5 \
+              --quiet \
               --complete \
               --careful \
-              --no-progressbars \
+              --postprocess ./rename-font.sh \
               --outputdir ../patched-fonts
           done
           ls ../patched-fonts
