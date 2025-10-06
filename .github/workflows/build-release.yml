@@ -196,7 +196,8 @@ jobs:
             desc "iosevka-scnf custom build patched with Nerd Fonts"
             homepage "https://github.com/$REPO"
 
-          $(echo -e "$FONT_STANZAS")end
+          $(echo -e "$FONT_STANZAS")
+          end
           EOF
 
       - name: Commit and push to Homebrew tap
