@@ -1,0 +1,137 @@
+name: Update Homebrew Tap
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to update tap with (e.g., v33.3.1). Leave empty to use latest release.'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  update-tap:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get release version and download URL
+        id: release
+        run: |
+          if [ -n "${{ inputs.version }}" ]; then
+            VERSION="${{ inputs.version }}"
+            echo "Using specified version: $VERSION"
+          else
+            VERSION=$(curl -s https://api.github.com/repos/${{ github.repository }}/releases/latest | jq -r .tag_name)
+            echo "Using latest release: $VERSION"
+          fi
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+          REPO="${{ github.repository }}"
+          TARBALL_URL="https://github.com/$REPO/releases/download/$VERSION/iosevka-sc-nerd-font-$VERSION.tar.gz"
+
+          echo "tarball_url=$TARBALL_URL" >> $GITHUB_OUTPUT
+          echo "Tarball URL: $TARBALL_URL"
+
+      - name: Download and calculate checksum
+        id: checksum
+        run: |
+          VERSION="${{ steps.release.outputs.version }}"
+          TARBALL_URL="${{ steps.release.outputs.tarball_url }}"
+
+          echo "Downloading $TARBALL_URL"
+          curl -L -o release.tar.gz "$TARBALL_URL"
+
+          SHA256=$(sha256sum release.tar.gz | cut -d' ' -f1)
+          echo "sha256=$SHA256" >> $GITHUB_OUTPUT
+          echo "SHA256: $SHA256"
+
+      - name: Clone Homebrew tap repository
+        run: |
+          git clone https://${{ secrets.TAP_REPO_TOKEN }}@github.com/smchunn/homebrew-tap.git tap-repo
+
+      - name: Update Homebrew tap files
+        run: |
+          VERSION="${{ steps.release.outputs.version }}"
+          VERSION_NUM="${VERSION#v}"
+          REPO="${{ github.repository }}"
+          SHA256="${{ steps.checksum.outputs.sha256 }}"
+
+          # Update Cask
+          cat > tap-repo/Casks/font-iosevka-sc-nerd-font.rb << EOF
+          cask "font-iosevka-sc-nerd-font" do
+            version "$VERSION_NUM"
+            sha256 "$SHA256"
+
+            url "https://github.com/$REPO/releases/download/$VERSION/iosevka-sc-nerd-font-$VERSION.tar.gz"
+            name "iosevka-scnf"
+            desc "iosevka-scnf custom build patched with Nerd Fonts"
+            homepage "https://github.com/$REPO"
+
+            font "*.ttf"
+          end
+          EOF
+
+          # Update Formula
+          cat > tap-repo/Formula/iosevka-sc-nerd-font.rb << 'FORMULA_EOF'
+          class IosevkaScNerdFont < Formula
+            desc "iosevka-scnf custom build patched with Nerd Fonts"
+            homepage "https://github.com/REPO_PLACEHOLDER"
+            url "https://github.com/REPO_PLACEHOLDER/releases/download/VERSION_PLACEHOLDER/iosevka-sc-nerd-font-VERSION_PLACEHOLDER.tar.gz"
+            sha256 "SHA256_PLACEHOLDER"
+            version "VERSION_PLACEHOLDER"
+
+            def install
+              (share/"fonts").install Dir["*.ttf"]
+            end
+
+            def post_install
+              if OS.mac?
+                # Copy fonts to user's Library/Fonts directory for immediate availability
+                fonts_dir = Pathname.new(Dir.home)/"Library/Fonts"
+                fonts_dir.mkpath
+                Dir["#{share}/fonts/*.ttf"].each do |font|
+                  FileUtils.cp font, fonts_dir, preserve: true
+                end
+              else
+                system "fc-cache", "-fv"
+              end
+            end
+
+            def caveats
+              <<~EOS
+                Fonts have been installed to:
+                - #{share}/fonts/
+                - ~/Library/Fonts/ (macOS)
+
+                You may need to restart your applications to see the fonts.
+              EOS
+            end
+
+            test do
+              assert_path_exists share/"fonts"
+            end
+          end
+          FORMULA_EOF
+
+          sed -i "s|REPO_PLACEHOLDER|$REPO|g" tap-repo/Formula/iosevka-sc-nerd-font.rb
+          sed -i "s|VERSION_PLACEHOLDER|$VERSION|g" tap-repo/Formula/iosevka-sc-nerd-font.rb
+          sed -i "s|SHA256_PLACEHOLDER|$SHA256|g" tap-repo/Formula/iosevka-sc-nerd-font.rb
+
+      - name: Commit and push to Homebrew tap
+        run: |
+          cd tap-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Casks/font-iosevka-sc-nerd-font.rb Formula/iosevka-sc-nerd-font.rb
+          git commit -m "Update to ${{ steps.release.outputs.version }}" || echo "No changes to commit"
+          git push
+
+      - name: Summary
+        run: |
+          echo "✅ Successfully updated Homebrew tap to ${{ steps.release.outputs.version }}"
+          echo "SHA256: ${{ steps.checksum.outputs.sha256 }}"

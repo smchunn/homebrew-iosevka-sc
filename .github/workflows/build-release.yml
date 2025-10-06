@@ -114,7 +114,6 @@ jobs:
             fontforge -script font-patcher "$font" \
               --complete \
               --careful \
-              --progressbars \
               --outputdir ../patched-fonts
           done
 
@@ -171,7 +170,7 @@ jobs:
 
       - name: Clone Homebrew tap repository
         run: |
-          git clone https://github.com/smchunn/homebrew-tap.git tap-repo
+          git clone https://${{ secrets.TAP_REPO_TOKEN }}@github.com/smchunn/homebrew-tap.git tap-repo
 
       - name: Update Homebrew tap
         run: |
@@ -199,7 +198,7 @@ jobs:
           sed -i "s|SHA256_PLACEHOLDER|$SHA256|g" tap-repo/Casks/font-iosevka-sc-nerd-font.rb
 
           # Update Formula
-          cat > tap-repo/Formula/iosevka-sc-nerd-font.rb << 'EOF'
+          cat > tap-repo/Formula/iosevka-sc-nerd-font.rb << 'FORMULA_EOF'
           class IosevkaScNerdFont < Formula
             desc "iosevka-scnf custom build patched with Nerd Fonts"
             homepage "https://github.com/REPO_PLACEHOLDER"
@@ -238,7 +237,7 @@ jobs:
               assert_path_exists share/"fonts"
             end
           end
-          EOF
+          FORMULA_EOF
 
           sed -i "s|REPO_PLACEHOLDER|$REPO|g" tap-repo/Formula/iosevka-sc-nerd-font.rb
           sed -i "s|VERSION_PLACEHOLDER|$VERSION|g" tap-repo/Formula/iosevka-sc-nerd-font.rb
@@ -251,7 +250,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add Casks/font-iosevka-sc-nerd-font.rb Formula/iosevka-sc-nerd-font.rb
           git commit -m "Update to ${{ needs.check-new-release.outputs.latest_version }}" || echo "No changes to commit"
-          git push || echo "No changes to push"
+          git push
 
       - name: Update AUR PKGBUILD
         run: |
