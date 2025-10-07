@@ -146,6 +146,15 @@ jobs:
           sha256sum *.tar.gz > checksums.txt
           sha256sum *.zip >> checksums.txt
 
+      - name: Delete existing release if manual trigger
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          VERSION=${{ needs.check-new-release.outputs.latest_version }}
+          gh release delete "$VERSION" --yes || true
+          git push --delete origin "$VERSION" || true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
