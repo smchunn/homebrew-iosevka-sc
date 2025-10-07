@@ -118,24 +118,14 @@ jobs:
             ls -la ../iosevka-build/dist/iosevka-sc/ || echo "iosevka-sc directory not found"
             exit 1
           fi
-          # Create post-process script to remove NerdFont from filename
-          cat > rename-font.sh << 'EOF'
-          #!/bin/bash
-          patched_font="$1"
-          new_name=$(echo "$patched_font" | sed 's/IosevkaScNerdFont/iosevka-sc/g')
-          if [ "$patched_font" != "$new_name" ]; then
-            mv "$patched_font" "$new_name"
-          fi
-          EOF
-          chmod +x rename-font.sh
+
           for font in ../iosevka-build/dist/iosevka-sc/TTF-Unhinted/*.ttf; do
             echo "Patching $(basename "$font")"
             fontforge -script font-patcher "$font" \
-              --makegroups 5 \
+              --makegroups -1 \
               --quiet \
               --complete \
               --careful \
-              --postprocess ./rename-font.sh \
               --outputdir ../patched-fonts
           done
           ls ../patched-fonts
