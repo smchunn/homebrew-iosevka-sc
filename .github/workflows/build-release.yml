@@ -122,7 +122,7 @@ jobs:
           cat > rename-font.sh << 'EOF'
           #!/bin/bash
           patched_font="$1"
-          new_name=$(echo "$patched_font" | sed 's/^[^-]*-//g')
+          new_name=$(echo "$patched_font" | sed 's/IosevkaScNerdFont/iosevka-sc/g')
           if [ "$patched_font" != "$new_name" ]; then
             mv "$patched_font" "$new_name"
           fi
