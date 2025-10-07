@@ -127,7 +127,6 @@ jobs:
             mv "$patched_font" "$new_name"
           fi
           EOF
-          cat rename-font.sh
           chmod +x rename-font.sh
           for font in ../iosevka-build/dist/iosevka-sc/TTF-Unhinted/*.ttf; do
             echo "Patching $(basename "$font")"
