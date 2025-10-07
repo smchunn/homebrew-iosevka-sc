@@ -80,7 +80,7 @@ jobs:
 
             url "https://github.com/$REPO/releases/download/$VERSION/iosevka-sc-$VERSION.tar.gz"
             name "iosevka-sc"
-            desc "iosevka-sc custom build patched with Nerd Fonts"
+            desc "Custom build of Iosevka"
             homepage "https://github.com/$REPO"
 
           $(echo -e "$FONT_STANZAS")

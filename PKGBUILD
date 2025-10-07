@@ -1,15 +1,15 @@
 # Maintainer: smchunn
-pkgname=iosevka-sc-nerd-font
+pkgname=ttf-iosevka-sc
 pkgver=33.3.1
 pkgrel=1
-pkgdesc="iosevka-scnf custom build patched with Nerd Fonts"
+pkgdesc="Custom build of Iosevka"
 arch=('any')
 url="https://github.com/smchunn/iosevka-sc"
 license=('OFL')
 depends=()
-provides=('ttf-font' 'iosevka-sc-nerd-font')
+provides=('ttf-font')
 conflicts=()
-source=("https://github.com/smchunn/iosevka-sc/releases/download/v${pkgver}/iosevka-sc-nerd-font-v${pkgver}.tar.gz")
+source=("https://github.com/smchunn/iosevka-sc/releases/download/v${pkgver}/iosevka-sc-v${pkgver}.tar.gz")
 sha256sums=('0bb41de806a7af6f72948558e6d65becceef6b94aa81d61f90f01919612673fc')
 
 package() {

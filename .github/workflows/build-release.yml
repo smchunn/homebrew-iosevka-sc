@@ -92,57 +92,19 @@ jobs:
           cd iosevka-build
           npm run build -- ttf-unhinted::iosevka-sc
 
-      - name: Setup Python for Nerd Fonts patcher
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Clone Nerd Fonts
-        run: |
-          git clone --depth 1 https://github.com/ryanoasis/nerd-fonts.git
-
-      - name: Install FontForge
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y fontforge python3-fontforge
-
-      - name: Patch fonts with Nerd Fonts
-        run: |
-          mkdir -p patched-fonts
-          cd nerd-fonts
-          # Check if TTF files exist
-          if ! ls ../iosevka-build/dist/iosevka-sc/TTF-Unhinted/*.ttf 1> /dev/null 2>&1; then
-            echo "ERROR: No TTF files found in ../iosevka-build/dist/iosevka-sc/TTF-Unhinted/"
-            echo "Checking build output structure:"
-            ls -la ../iosevka-build/dist/ || echo "dist directory not found"
-            ls -la ../iosevka-build/dist/iosevka-sc/ || echo "iosevka-sc directory not found"
-            exit 1
-          fi
-
-          for font in ../iosevka-build/dist/iosevka-sc/TTF-Unhinted/*.ttf; do
-            echo "Patching $(basename "$font")"
-            fontforge -script font-patcher "$font" \
-              --makegroups -1 \
-              --quiet \
-              --complete \
-              --careful \
-              --outputdir ../patched-fonts
-          done
-          ls ../patched-fonts
-
       - name: Create release directory structure
         run: |
           VERSION=${{ needs.check-new-release.outputs.latest_version }}
           mkdir -p release
           cd release
 
-          # Create archives
-          tar -czf iosevka-sc-$VERSION.tar.gz -C ../patched-fonts .
-          cd ../patched-fonts
-          zip -r ../release/iosevka-sc-$VERSION.zip .
+          # Create archives from built fonts
+          tar -czf iosevka-sc-$VERSION.tar.gz -C ../iosevka-build/dist/iosevka-sc/TTF-Unhinted .
+          cd ../iosevka-build/dist/iosevka-sc/TTF-Unhinted
+          zip -r ../../../../release/iosevka-sc-$VERSION.zip .
 
           # Calculate checksums
-          cd ../release
+          cd ../../../../release
           sha256sum *.tar.gz > checksums.txt
           sha256sum *.zip >> checksums.txt
 
@@ -161,7 +123,7 @@ jobs:
           tag_name: ${{ needs.check-new-release.outputs.latest_version }}
           name: iosevka-sc ${{ needs.check-new-release.outputs.latest_version }}
           body: |
-            iosevka-sc built from Iosevka ${{ needs.check-new-release.outputs.latest_version }}
+            Custom build of Iosevka ${{ needs.check-new-release.outputs.latest_version }}
 
             ## Installation
 
@@ -173,7 +135,7 @@ jobs:
 
             ### Arch Linux (AUR)
             ```bash
-            yay -S iosevka-sc
+            yay -S ttf-iosevka-sc
             ```
 
             ### Manual Installation
@@ -200,9 +162,9 @@ jobs:
           REPO="${{ github.repository }}"
           SHA256=$(sha256sum release/*.tar.gz | cut -d' ' -f1)
 
-          # Generate font stanzas from patched fonts
+          # Generate font stanzas from built fonts
           FONT_STANZAS=""
-          for font in patched-fonts/*.ttf; do
+          for font in iosevka-build/dist/iosevka-sc/TTF-Unhinted/*.ttf; do
             FONT_NAME=$(basename "$font")
             FONT_STANZAS="${FONT_STANZAS}  font \"${FONT_NAME}\"\n"
           done
@@ -215,7 +177,7 @@ jobs:
 
             url "https://github.com/$REPO/releases/download/$VERSION/iosevka-sc-$VERSION.tar.gz"
             name "iosevka-sc"
-            desc "iosevka-sc custom build patched with Nerd Fonts"
+            desc "Custom build of Iosevka"
             homepage "https://github.com/$REPO"
 
           $(echo -e "$FONT_STANZAS")
@@ -236,9 +198,28 @@ jobs:
           VERSION=${{ needs.check-new-release.outputs.latest_version }}
           VERSION_NUM=$(echo $VERSION | sed 's/^v//')
           SHA256=$(sha256sum release/*.tar.gz | cut -d' ' -f1)
+          REPO="${{ github.repository }}"
 
-          sed -i "s/pkgver=.*/pkgver=$VERSION_NUM/" PKGBUILD
-          sed -i "s/sha256sums=.*/sha256sums=('$SHA256')/" PKGBUILD
+          cat > PKGBUILD << EOF
+          # Maintainer: smchunn
+          pkgname=ttf-iosevka-sc
+          pkgver=$VERSION_NUM
+          pkgrel=1
+          pkgdesc="Custom build of Iosevka"
+          arch=('any')
+          url="https://github.com/$REPO"
+          license=('OFL')
+          depends=()
+          provides=('ttf-font')
+          conflicts=()
+          source=("https://github.com/$REPO/releases/download/$VERSION/iosevka-sc-$VERSION.tar.gz")
+          sha256sums=('$SHA256')
+
+          package() {
+              install -dm755 "\${pkgdir}/usr/share/fonts/TTF"
+              install -m644 *.ttf "\${pkgdir}/usr/share/fonts/TTF/"
+          }
+          EOF
 
           git add PKGBUILD
           git commit -m "Update PKGBUILD for $VERSION" || echo "No changes to commit"

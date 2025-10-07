@@ -1,8 +1,8 @@
-# iosevka-scnf
+# iosevka-sc
 
-Custom build of [Iosevka](https://github.com/be5invis/Iosevka) patched with [Nerd Fonts](https://github.com/ryanoasis/nerd-fonts).
+Custom build of [Iosevka](https://github.com/be5invis/Iosevka).
 
-This repository automatically builds new releases when upstream Iosevka releases are published, applies the custom build plan, and patches the fonts with Nerd Fonts symbols.
+This repository automatically builds new releases when upstream Iosevka releases are published and applies the custom build plan.
 
 ## Installation
 
@@ -10,7 +10,7 @@ This repository automatically builds new releases when upstream Iosevka releases
 
 ```bash
 brew tap smchunn/tap
-brew install --cask font-iosevka-sc-nerd-font
+brew install --cask font-iosevka-sc
 ```
 
 ### Arch Linux (AUR)
@@ -19,9 +19,9 @@ brew install --cask font-iosevka-sc-nerd-font
 2. Then install using your AUR helper:
 
 ```bash
-yay -S iosevka-sc-nerd-font
+yay -S ttf-iosevka-sc
 # or
-paru -S iosevka-sc-nerd-font
+paru -S ttf-iosevka-sc
 ```
 
 ### Manual Installation
@@ -52,14 +52,13 @@ See the [Iosevka customization guide](https://github.com/be5invis/Iosevka/blob/m
    - Runs daily to check for new Iosevka releases
    - Can also be triggered manually
    - Builds Iosevka with the custom build plan
-   - Patches fonts with Nerd Fonts glyphs
    - Creates a GitHub release with archives
-   - Auto-updates Homebrew formula and AUR PKGBUILD
+   - Auto-updates Homebrew cask and AUR PKGBUILD
 
 2. **Homebrew Tap**:
-   - Formula and Cask stored in [smchunn/homebrew-tap](https://github.com/smchunn/homebrew-tap)
+   - Cask stored in [smchunn/homebrew-tap](https://github.com/smchunn/homebrew-tap)
    - Auto-updated by GitHub Actions on new releases
-   - Users can install with `brew tap smchunn/tap` + `brew install --cask font-iosevka-sc-nerd-font`
+   - Users can install with `brew tap smchunn/tap` + `brew install --cask font-iosevka-sc`
 
 3. **AUR Package**:
    - PKGBUILD stored in this repository
@@ -72,7 +71,7 @@ The PKGBUILD is auto-updated in this repo, but you need to manually publish to A
 
 1. Clone the AUR repository:
    ```bash
-   git clone ssh://aur@aur.archlinux.org/iosevka-sc-nerd-font.git aur-iosevka-sc
+   git clone ssh://aur@aur.archlinux.org/ttf-iosevka-sc.git aur-iosevka-sc
    cd aur-iosevka-sc
    ```
 
@@ -108,4 +107,3 @@ To manually trigger a build for a specific Iosevka version:
 ## License
 
 - Iosevka: [SIL Open Font License 1.1](https://github.com/be5invis/Iosevka/blob/main/LICENSE.md)
-- Nerd Fonts: [MIT License](https://github.com/ryanoasis/nerd-fonts/blob/master/LICENSE)
