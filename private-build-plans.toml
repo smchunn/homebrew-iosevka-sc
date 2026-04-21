@@ -1,6 +1,6 @@
 [buildPlans.iosevka-sc]
 family = "iosevka sc"
-spacing = "term"
+spacing = "fixed"
 serifs = "sans"
 noCvSs = true
 exportGlyphNames = false
@@ -23,4 +23,3 @@ css   = 400
 shape = 700
 menu  = 700
 css   = 700
-
